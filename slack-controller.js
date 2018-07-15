@@ -1,23 +1,44 @@
 const https = require('https');
 
+/**
+ * Slack Controller
+ *
+ * Handles request made from slack.
+ */
 class SlackController {
+    /**
+     * @param authToken authentication token
+     */
     constructor(authToken) {
         this.authToken = authToken;
     }
 
+    /**
+     * Handles slash command requests
+     *
+     * @param req an http request from slack
+     * @param res an http response to slack
+     */
     handleCommand(req, res) {
         res.set('Content-Type', 'application/json');
         res.send(''); // slack needs an immediate message reception confirmation
 
-        this.sendFlagifiedMessage(req.body);
+        this.sendFlagifiedMessage(
+            req.body.channel_id,
+            req.body.text,
+            req.body.user_name,
+        );
     }
 
-    sendFlagifiedMessage(requestBody) {
-        const body = SlackController.buildRequestBody(
-            requestBody.channel_id,
-            requestBody.text,
-            requestBody.user_name,
-        );
+    /**
+     * Sends a flagified text message to a channel from a user.
+     *
+     * @param channelId the channel to send the message to
+     * @param text the text to flagify
+     * @param username the emulated user's username
+     */
+    sendFlagifiedMessage(channelId, text, username) {
+        const body = SlackController.buildRequestBody(channelId, text, username);
 
         const request = this.buildRequest(body);
 
@@ -25,6 +46,15 @@ class SlackController {
         request.end();
     }
 
+    /**
+     * Builds the request body.
+     *
+     * @param channelId the channel to send the message to
+     * @param text the text to flagify
+     * @param username the emulated user's username
+     *
+     * @returns {string} the stringified request body
+     */
     static buildRequestBody(channelId, text, username) {
         return JSON.stringify({
             channel: channelId,
@@ -34,28 +64,12 @@ class SlackController {
         });
     }
 
-    buildRequest(body) {
-        const options = {
-            hostname: 'slack.com',
-            path: '/api/chat.postMessage',
-            method: 'POST',
-            port: 443,
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Content-Length': Buffer.byteLength(body),
-                Authorization: `Bearer ${this.authToken}`,
-            },
-        };
-
-        return https.request(options, (response) => {
-            response.setEncoding('utf8');
-            response.on('data', (chunk) => {
-                // eslint-disable-next-line no-console
-                console.log(`response: ${chunk}`);
-            });
-        });
-    }
-
+    /**
+     * Replaces the text with flags when possible.
+     *
+     * @param text the text to replace
+     * @returns {string} the flagified text
+     */
     static replaceTextWithFlags(text) {
         const flagCodes = [
             'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'ao', 'aq', 'ar', 'as', 'at', 'au',
@@ -73,6 +87,44 @@ class SlackController {
         const flagsExpression = new RegExp(flagCodes.join('|'), 'ig');
 
         return text.replace(flagsExpression, ':flag-$&:');
+    }
+
+    /**
+     * Builds the http request.
+     *
+     * @param body the request's body
+     * @returns {*}
+     */
+    buildRequest(body) {
+        const bodyLength = Buffer.byteLength(body);
+        const options = this.buildRequestOptions(bodyLength);
+
+        return https.request(options, (res) => {
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => {
+                // eslint-disable-next-line no-console
+                console.log(`response: ${chunk}`);
+            });
+        });
+    }
+
+    /**
+     * Build
+     * @param bodyLength the request's body length
+     * @returns {object} the request options
+     */
+    buildRequestOptions(bodyLength) {
+        return {
+            hostname: 'slack.com',
+            path: '/api/chat.postMessage',
+            method: 'POST',
+            port: 443,
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Content-Length': bodyLength,
+                Authorization: `Bearer ${this.authToken}`,
+            },
+        };
     }
 }
 
