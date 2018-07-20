@@ -1,0 +1,27 @@
+service: flagify
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: prod
+  region: us-east-1
+
+package:
+  exclude:
+    - .idea/**
+    - .env.template
+    - .eslintrc.json
+    - res/**
+    - test/**
+    - package.json
+    - package-lock.json
+    - README.md
+
+functions:
+  flagify:
+    handler: index.handler
+    name: ${self:provider.stage}-flagify
+    description: Flagifies a slack message
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

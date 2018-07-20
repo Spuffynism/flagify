@@ -20,14 +20,14 @@ class SlackController {
      * @param res an http response to slack
      */
     handleCommand(req, res) {
-        res.set('Content-Type', 'application/json');
-        res.send(''); // slack needs an immediate message reception confirmation
-
         this.sendFlagifiedMessage(
             req.body.channel_id,
             req.body.text,
             req.body.user_name,
         );
+
+        res.set('Content-Type', 'application/json');
+        res.send(''); // slack needs an immediate reception confirmation
     }
 
     /**
@@ -38,7 +38,11 @@ class SlackController {
      * @param username the emulated user's username
      */
     sendFlagifiedMessage(channelId, text, username) {
-        const body = SlackController.buildRequestBody(channelId, text, username);
+        const body = SlackController.buildRequestBody(
+            channelId,
+            text,
+            username,
+        );
 
         const request = this.buildRequest(body);
 
