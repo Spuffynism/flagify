@@ -4,21 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
-    "express": "^4.16.3",
-    "serverless-http": "^1.6.0"
+    "express": "^4.16.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "mocha": "^5.2.0"
+    "mocha": "^7.1.2"
   }
 }

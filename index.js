@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const serverless = require('serverless-http');
 
 const SlackController = require('./slack-controller');
 
@@ -17,5 +16,7 @@ app.get('/', (req, res) => {
 
 app.post('/flagify', (req, res) => slackController.handleCommand(req, res));
 
-app.listen(3000);
-module.exports.handler = serverless(app);
+app.listen(3000, () => {
+    // eslint-disable-next-line no-console
+    console.log('> listening on port 3000');
+});
