@@ -16,4 +16,4 @@ F:flag-la::flag-gi:fy-:flag-me:!
 
 - Rename `.env.template` to `.env`
 - Add necessary tokens
-- `nom run start`
+- `nom run dev`
