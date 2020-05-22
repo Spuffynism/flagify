@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "cross-env NODE_ENV=test mocha",
+    "dev": "cross-env NODE_ENV=development node index.js",
     "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cross-env": "^7.0.2",
     "dotenv": "^6.2.0",
     "express": "^4.17.1"
   },
