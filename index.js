@@ -16,7 +16,11 @@ app.get('/', (req, res) => res.send('nothing to see here...'));
 
 app.post('/flagify', (req, res) => slackController.handleCommand(req, res));
 
-app.listen(port, () => {
-    // eslint-disable-next-line no-console
-    console.log(`> listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        // eslint-disable-next-line no-console
+        console.log(`> listening on port ${port}`);
+    });
+} else {
+    module.exports = app;
+}
